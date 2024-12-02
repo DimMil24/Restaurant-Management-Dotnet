@@ -1,0 +1,40 @@
+﻿@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "View";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container-md">
+    <div class="row mt-2">
+        <div class="col-3 mt-4">
+
+        </div>
+        <div class="col-md-6">
+            @foreach (var item in Model)
+            {
+                <ul class="list-group mt-4">
+                    <li class="list-group-item d-flex align-items-center justify-content-between">
+                        <div>
+                            <div class="fw-bold">
+                            @Html.DisplayFor(modelItem => item.Name)
+                            </div>
+                            <div class="fw-light">
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </div>
+                            <div>
+                                @Html.DisplayFor(modelItem => item.Price) €
+                            </div>
+                        </div>
+                        <div>
+                            <i data-feather="plus"></i>
+                        </div>
+                    </li>
+                </ul>
+            }   
+        </div>
+        <div class="col-3 mt-4">
+            <div class="d-flex justify-content-center">
+                Hi
+            </div>
+        </div>
+</div>

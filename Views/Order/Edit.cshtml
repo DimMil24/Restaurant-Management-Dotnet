@@ -1,0 +1,94 @@
+﻿@model Restaurant_Manager.Models.CustomerOrder
+
+@{
+	ViewData["Title"] = "Edit";
+	Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Edit</h1>
+
+<h4>CustomerOrder</h4>
+<hr />
+<div class="row">
+	<div class="col-md-4">
+		<form asp-action="Edit">
+			<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+			<input type="hidden" asp-for="Id" />
+			<input type="hidden" asp-for="RestaurantId" />
+			<div class="form-group form-check">
+				<label class="form-check-label">
+					<input class="form-check-input" asp-for="Open" /> @Html.DisplayNameFor(model => model.Open)
+				</label>
+			</div>
+			<div id="productList">
+				@for (int i=0;i<Model.OrderProducts.Count; i++)
+				{
+					<div class="form-group">
+						<label for="products" class="control-label">Product</label>
+						<select name="products" class="form-control">
+							@foreach(var item in ViewBag.Products)
+							{
+								@if (Model.OrderProducts[i].ProductId == item.Id)
+								{
+								<option selected value="@item.Id">@item.Name</option>
+								}
+								else
+								{
+								<option value="@item.Id">@item.Name</option>
+								}
+							}
+						</select>
+					</div>
+					<div class="form-group">
+						<label for="quantity" class="form-label">Quantity</label>
+						<input type="number" required class="form-control" id="quantity" name="quantity" min="1" step="1" value="@Model.OrderProducts[i].Quantity">
+					</div>
+				}
+			</div>
+			<div class="form-group">
+				<input type="submit" value="Apply" class="btn btn-primary" />
+				<button type="button" class="btn btn-primary" onclick="addProduct()">Add Another Product</button>
+			</div>
+		</form>
+	</div>
+</div>
+
+<div>
+	<a asp-action="Index">Back to List</a>
+</div>
+
+<script>
+	let productCount = @Model.OrderProducts.Count;
+
+	let selectElement = document.querySelector('[name=products]');
+	let optionNames = [...selectElement.options].map(o => o.text)
+	let optionValues = [...selectElement.options].map(o => o.value)
+
+	function addProduct() {
+		const productList = document.getElementById('productList');
+		const newProduct = document.createElement('div');
+		newProduct.innerHTML = `
+							<div class="form-group">
+								<label for="products" class="control-label"></label>
+									<select class="form-control" name="products" id="generatedSelect${productCount}"></select>
+							</div>
+							<div class="form-group">
+								<label for="quantity" class="form-label">Quantity</label>
+								<input type="number" required class="form-control" id="quantity" name="quantity" min="1" step="1" placeholder="quantity">
+							</div>
+								  `;
+		productList.appendChild(newProduct);
+		let selected = document.getElementById('generatedSelect' + productCount);
+
+		for (let i = 0; i < optionValues.length; i++) {
+			selected.options[selected.options.length] = new Option(optionNames[i], optionValues[i]);
+		}
+		productCount++;
+	}
+</script>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}
