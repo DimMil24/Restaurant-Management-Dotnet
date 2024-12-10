@@ -12,8 +12,8 @@ using Restaurant_Manager.Data;
 namespace Restaurant_Manager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241202150612_init")]
-    partial class init
+    [Migration("20241210150544_remove_useless_entry")]
+    partial class remove_useless_entry
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -225,10 +225,6 @@ namespace Restaurant_Manager.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("lockout_end");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
@@ -278,6 +274,9 @@ namespace Restaurant_Manager.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("RestaurantId")
+                        .HasDatabaseName("ix_aspnet_users_restaurant_id");
+
                     b.ToTable("aspnet_users", (string)null);
                 });
 
@@ -289,10 +288,6 @@ namespace Restaurant_Manager.Migrations
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<long?>("CustomerTableId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("customer_table_id");
 
                     b.Property<DateTime>("Date")
                         .HasColumnType("timestamp with time zone")
@@ -306,42 +301,21 @@ namespace Restaurant_Manager.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("restaurant_id");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
                         .HasName("pk_customer_order");
-
-                    b.HasIndex("CustomerTableId")
-                        .HasDatabaseName("ix_customer_order_customer_table_id");
 
                     b.HasIndex("RestaurantId")
                         .HasDatabaseName("ix_customer_order_restaurant_id");
 
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_customer_order_user_id");
+
                     b.ToTable("customer_order", (string)null);
-                });
-
-            modelBuilder.Entity("Restaurant_Manager.Models.CustomerTable", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<long>("Id"));
-
-                    b.Property<bool>("Available")
-                        .HasColumnType("boolean")
-                        .HasColumnName("available");
-
-                    b.Property<long>("RestaurantId")
-                        .HasColumnType("bigint")
-                        .HasColumnName("restaurant_id");
-
-                    b.HasKey("Id")
-                        .HasName("pk_customer_table");
-
-                    b.HasIndex("RestaurantId")
-                        .HasDatabaseName("ix_customer_table_restaurant_id");
-
-                    b.ToTable("customer_table", (string)null);
                 });
 
             modelBuilder.Entity("Restaurant_Manager.Models.OrderProduct", b =>
@@ -398,6 +372,10 @@ namespace Restaurant_Manager.Migrations
                         .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("category");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -506,13 +484,18 @@ namespace Restaurant_Manager.Migrations
                         .HasConstraintName("fk_aspnet_tokens_aspnet_users_user_id");
                 });
 
+            modelBuilder.Entity("Restaurant_Manager.Areas.Identity.CustomIdentityUser", b =>
+                {
+                    b.HasOne("Restaurant_Manager.Models.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .HasConstraintName("fk_aspnet_users_restaurant_restaurant_id");
+
+                    b.Navigation("Restaurant");
+                });
+
             modelBuilder.Entity("Restaurant_Manager.Models.CustomerOrder", b =>
                 {
-                    b.HasOne("Restaurant_Manager.Models.CustomerTable", "CustomerTable")
-                        .WithMany()
-                        .HasForeignKey("CustomerTableId")
-                        .HasConstraintName("fk_customer_order_customer_table_customer_table_id");
-
                     b.HasOne("Restaurant_Manager.Models.Restaurant", "Restaurant")
                         .WithMany()
                         .HasForeignKey("RestaurantId")
@@ -520,21 +503,16 @@ namespace Restaurant_Manager.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_customer_order_restaurant_restaurant_id");
 
-                    b.Navigation("CustomerTable");
-
-                    b.Navigation("Restaurant");
-                });
-
-            modelBuilder.Entity("Restaurant_Manager.Models.CustomerTable", b =>
-                {
-                    b.HasOne("Restaurant_Manager.Models.Restaurant", "Restaurant")
+                    b.HasOne("Restaurant_Manager.Areas.Identity.CustomIdentityUser", "User")
                         .WithMany()
-                        .HasForeignKey("RestaurantId")
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired()
-                        .HasConstraintName("fk_customer_table_restaurant_restaurant_id");
+                        .HasConstraintName("fk_customer_order_users_user_id");
 
                     b.Navigation("Restaurant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Restaurant_Manager.Models.OrderProduct", b =>

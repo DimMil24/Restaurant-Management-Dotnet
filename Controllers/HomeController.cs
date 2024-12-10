@@ -24,6 +24,7 @@ namespace Restaurant_Manager.Controllers
 
 		public async Task<IActionResult> RestaurantPreview(long? id)
 		{
+            ViewBag.Id = id;
 			return View(await _context.Product.Where(pr => pr.RestaurantId==id).ToListAsync());
 		}
 

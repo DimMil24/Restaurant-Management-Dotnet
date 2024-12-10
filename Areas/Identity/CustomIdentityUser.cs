@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Restaurant_Manager.Models;
 
 namespace Restaurant_Manager.Areas.Identity
 {
 	public class CustomIdentityUser : IdentityUser
 	{
-		public string? Name { get; set; }
 		public long? RestaurantId { get; set; }
+
+		public Restaurant? Restaurant { get; set; }
 	}
 }

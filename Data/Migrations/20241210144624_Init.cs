@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Restaurant_Manager.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -24,33 +24,6 @@ namespace Restaurant_Manager.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_aspnet_roles", x => x.id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "aspnet_users",
-                columns: table => new
-                {
-                    id = table.Column<string>(type: "text", nullable: false),
-                    name = table.Column<string>(type: "text", nullable: true),
-                    restaurant_id = table.Column<long>(type: "bigint", nullable: true),
-                    user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    normalized_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    email_confirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    password_hash = table.Column<string>(type: "text", nullable: true),
-                    security_stamp = table.Column<string>(type: "text", nullable: true),
-                    concurrency_stamp = table.Column<string>(type: "text", nullable: true),
-                    phone_number = table.Column<string>(type: "text", nullable: true),
-                    phone_number_confirmed = table.Column<bool>(type: "boolean", nullable: false),
-                    two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    lockout_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
-                    lockout_enabled = table.Column<bool>(type: "boolean", nullable: false),
-                    access_failed_count = table.Column<int>(type: "integer", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_aspnet_users", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -85,6 +58,62 @@ namespace Restaurant_Manager.Migrations
                         name: "fk_aspnet_role_claims_aspnet_roles_role_id",
                         column: x => x.role_id,
                         principalTable: "aspnet_roles",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "aspnet_users",
+                columns: table => new
+                {
+                    id = table.Column<string>(type: "text", nullable: false),
+                    name = table.Column<string>(type: "text", nullable: true),
+                    restaurant_id = table.Column<long>(type: "bigint", nullable: true),
+                    user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    normalized_user_name = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    normalized_email = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    email_confirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    password_hash = table.Column<string>(type: "text", nullable: true),
+                    security_stamp = table.Column<string>(type: "text", nullable: true),
+                    concurrency_stamp = table.Column<string>(type: "text", nullable: true),
+                    phone_number = table.Column<string>(type: "text", nullable: true),
+                    phone_number_confirmed = table.Column<bool>(type: "boolean", nullable: false),
+                    two_factor_enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    lockout_end = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    lockout_enabled = table.Column<bool>(type: "boolean", nullable: false),
+                    access_failed_count = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_aspnet_users", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_aspnet_users_restaurant_restaurant_id",
+                        column: x => x.restaurant_id,
+                        principalTable: "restaurant",
+                        principalColumn: "id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "product",
+                columns: table => new
+                {
+                    id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    name = table.Column<string>(type: "text", nullable: false),
+                    price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
+                    category = table.Column<string>(type: "text", nullable: false),
+                    available = table.Column<bool>(type: "boolean", nullable: false),
+                    description = table.Column<string>(type: "text", nullable: true),
+                    restaurant_id = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_product", x => x.id);
+                    table.ForeignKey(
+                        name: "fk_product_restaurant_restaurant_id",
+                        column: x => x.restaurant_id,
+                        principalTable: "restaurant",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -175,49 +204,6 @@ namespace Restaurant_Manager.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "customer_table",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    available = table.Column<bool>(type: "boolean", nullable: false),
-                    restaurant_id = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_customer_table", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_customer_table_restaurant_restaurant_id",
-                        column: x => x.restaurant_id,
-                        principalTable: "restaurant",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "product",
-                columns: table => new
-                {
-                    id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "text", nullable: false),
-                    price = table.Column<decimal>(type: "numeric(18,2)", nullable: false),
-                    category = table.Column<string>(type: "text", nullable: false),
-                    available = table.Column<bool>(type: "boolean", nullable: false),
-                    restaurant_id = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_product", x => x.id);
-                    table.ForeignKey(
-                        name: "fk_product_restaurant_restaurant_id",
-                        column: x => x.restaurant_id,
-                        principalTable: "restaurant",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "customer_order",
                 columns: table => new
                 {
@@ -225,21 +211,22 @@ namespace Restaurant_Manager.Migrations
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     open = table.Column<bool>(type: "boolean", nullable: false),
-                    customer_table_id = table.Column<long>(type: "bigint", nullable: true),
-                    restaurant_id = table.Column<long>(type: "bigint", nullable: false)
+                    restaurant_id = table.Column<long>(type: "bigint", nullable: false),
+                    user_id = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("pk_customer_order", x => x.id);
                     table.ForeignKey(
-                        name: "fk_customer_order_customer_table_customer_table_id",
-                        column: x => x.customer_table_id,
-                        principalTable: "customer_table",
-                        principalColumn: "id");
-                    table.ForeignKey(
                         name: "fk_customer_order_restaurant_restaurant_id",
                         column: x => x.restaurant_id,
                         principalTable: "restaurant",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "fk_customer_order_users_user_id",
+                        column: x => x.user_id,
+                        principalTable: "aspnet_users",
                         principalColumn: "id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -304,15 +291,15 @@ namespace Restaurant_Manager.Migrations
                 column: "normalized_email");
 
             migrationBuilder.CreateIndex(
+                name: "ix_aspnet_users_restaurant_id",
+                table: "aspnet_users",
+                column: "restaurant_id");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "aspnet_users",
                 column: "normalized_user_name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "ix_customer_order_customer_table_id",
-                table: "customer_order",
-                column: "customer_table_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_customer_order_restaurant_id",
@@ -320,9 +307,9 @@ namespace Restaurant_Manager.Migrations
                 column: "restaurant_id");
 
             migrationBuilder.CreateIndex(
-                name: "ix_customer_table_restaurant_id",
-                table: "customer_table",
-                column: "restaurant_id");
+                name: "ix_customer_order_user_id",
+                table: "customer_order",
+                column: "user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ix_order_product_customer_order_id",
@@ -365,16 +352,13 @@ namespace Restaurant_Manager.Migrations
                 name: "aspnet_roles");
 
             migrationBuilder.DropTable(
-                name: "aspnet_users");
-
-            migrationBuilder.DropTable(
                 name: "customer_order");
 
             migrationBuilder.DropTable(
                 name: "product");
 
             migrationBuilder.DropTable(
-                name: "customer_table");
+                name: "aspnet_users");
 
             migrationBuilder.DropTable(
                 name: "restaurant");

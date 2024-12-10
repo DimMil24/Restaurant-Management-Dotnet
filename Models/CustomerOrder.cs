@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Restaurant_Manager.Areas.Identity;
 
 namespace Restaurant_Manager.Models
 {
@@ -10,10 +11,11 @@ namespace Restaurant_Manager.Models
         public DateTime Date { get; set; } = DateTimeOffset.Now.UtcDateTime;
         public bool Open { get; set; } = true;
         public long RestaurantId { get; set; }
-
+        public required string UserId { get; set; }
 
         public List<OrderProduct>? OrderProducts { get; set; }
         public Restaurant? Restaurant { get; set; }
+        public CustomIdentityUser? User { get; set; }
 
     }
 }

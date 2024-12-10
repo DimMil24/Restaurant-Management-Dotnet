@@ -1,4 +1,6 @@
-﻿namespace Restaurant_Manager.Models
+﻿using Restaurant_Manager.Areas.Identity;
+
+namespace Restaurant_Manager.Models
 {
 	public class Restaurant
 	{

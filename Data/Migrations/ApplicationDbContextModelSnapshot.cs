@@ -222,10 +222,6 @@ namespace Restaurant_Manager.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("lockout_end");
 
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)")
@@ -275,6 +271,9 @@ namespace Restaurant_Manager.Migrations
                         .IsUnique()
                         .HasDatabaseName("UserNameIndex");
 
+                    b.HasIndex("RestaurantId")
+                        .HasDatabaseName("ix_aspnet_users_restaurant_id");
+
                     b.ToTable("aspnet_users", (string)null);
                 });
 
@@ -299,11 +298,19 @@ namespace Restaurant_Manager.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("restaurant_id");
 
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("user_id");
+
                     b.HasKey("Id")
                         .HasName("pk_customer_order");
 
                     b.HasIndex("RestaurantId")
                         .HasDatabaseName("ix_customer_order_restaurant_id");
+
+                    b.HasIndex("UserId")
+                        .HasDatabaseName("ix_customer_order_user_id");
 
                     b.ToTable("customer_order", (string)null);
                 });
@@ -474,6 +481,16 @@ namespace Restaurant_Manager.Migrations
                         .HasConstraintName("fk_aspnet_tokens_aspnet_users_user_id");
                 });
 
+            modelBuilder.Entity("Restaurant_Manager.Areas.Identity.CustomIdentityUser", b =>
+                {
+                    b.HasOne("Restaurant_Manager.Models.Restaurant", "Restaurant")
+                        .WithMany()
+                        .HasForeignKey("RestaurantId")
+                        .HasConstraintName("fk_aspnet_users_restaurant_restaurant_id");
+
+                    b.Navigation("Restaurant");
+                });
+
             modelBuilder.Entity("Restaurant_Manager.Models.CustomerOrder", b =>
                 {
                     b.HasOne("Restaurant_Manager.Models.Restaurant", "Restaurant")
@@ -483,7 +500,16 @@ namespace Restaurant_Manager.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_customer_order_restaurant_restaurant_id");
 
+                    b.HasOne("Restaurant_Manager.Areas.Identity.CustomIdentityUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired()
+                        .HasConstraintName("fk_customer_order_users_user_id");
+
                     b.Navigation("Restaurant");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Restaurant_Manager.Models.OrderProduct", b =>

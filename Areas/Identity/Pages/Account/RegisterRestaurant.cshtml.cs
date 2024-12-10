@@ -27,7 +27,7 @@ using Restaurant_Manager.Models;
 
 namespace Restaurant_Manager.Areas.Identity.Pages.Account
 {
-	public class RegisterModel : PageModel
+	public class RegisterRestaurantModel : PageModel
 	{
 		private readonly SignInManager<CustomIdentityUser> _signInManager;
 		private readonly UserManager<CustomIdentityUser> _userManager;
@@ -35,14 +35,14 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly ApplicationDbContext _context;
 		//private readonly IUserEmailStore<CustomIdentityUser> _emailStore;
-		private readonly ILogger<RegisterModel> _logger;
+		private readonly ILogger<RegisterRestaurantModel> _logger;
 		private readonly IEmailSender _emailSender;
 
-		public RegisterModel(
+		public RegisterRestaurantModel(
 			UserManager<CustomIdentityUser> userManager,
 			IUserStore<CustomIdentityUser> userStore,
 			SignInManager<CustomIdentityUser> signInManager,
-			ILogger<RegisterModel> logger,
+			ILogger<RegisterRestaurantModel> logger,
 			ApplicationDbContext applicationDbContext,
 			RoleManager<IdentityRole> roleManager,
 			IEmailSender emailSender)
@@ -129,7 +129,7 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 				{
 					_logger.LogInformation("User created a new account with password.");
 
-					var new_restaurant = new Restaurant { Name = Input.RestaurantName, Description = Input.RestaurantDescription, IsOpen = true };
+					var new_restaurant = new Restaurant { Name = Input.RestaurantName, Description = Input.RestaurantDescription, IsOpen = true};
 					_context.Add(new_restaurant);
 					var added_Restaurant = _context.ChangeTracker.Entries().Where(x => x.State == EntityState.Added).FirstOrDefault();
 					await _context.SaveChangesAsync();
