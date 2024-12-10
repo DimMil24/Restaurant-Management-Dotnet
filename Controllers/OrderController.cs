@@ -26,7 +26,7 @@ namespace Restaurant_Manager.Controllers
 		public async Task<IActionResult> Index()
 		{
 			var restaurant_id = long.Parse(User.FindFirst("RestaurantId")?.Value);
-			return View(await _context.CustomerOrder.Where(e => e.RestaurantId == restaurant_id).ToListAsync());
+			return View(await _context.CustomerOrder.Include(e => e.User).Where(e => e.RestaurantId == restaurant_id).ToListAsync());
 		}
 
 		public async Task<IActionResult> Details(long? id)

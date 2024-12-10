@@ -27,7 +27,7 @@ namespace Restaurant_Manager.Controllers
 
 		[HttpPost]
 		[Route("newOrder")]
-		public async Task<IActionResult> NewOrder([FromBody] NewOrderRequest newOrderRequest)
+		public async Task<IActionResult> NewOrder(NewOrderRequest newOrderRequest)
 		{
 			if (ModelState.IsValid)
 			{
