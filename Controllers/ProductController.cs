@@ -8,25 +8,32 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Services;
 
 namespace Restaurant_Manager.Controllers
 {
 	[Authorize(Roles = "Owner,Admin")]
 	public class ProductController : Controller
 	{
-		private readonly ApplicationDbContext _context;
+		private readonly ProductService _productService;
 		private readonly IAuthorizationService _authorizationService;
 
-		public ProductController(ApplicationDbContext context, IAuthorizationService authorizationService)
+		public ProductController(ProductService productService, IAuthorizationService authorizationService)
 		{
-			_context = context;
+			_productService = productService;
 			_authorizationService = authorizationService;
 		}
 
 		public async Task<IActionResult> Index()
 		{
-			var restaurant_id = long.Parse(User.FindFirst("RestaurantId")?.Value);
-			return View(await _context.Product.Where(e => e.RestaurantId == restaurant_id).ToListAsync());
+			var value = User.FindFirst("RestaurantId")?.Value;
+			if (value != null)
+			{
+				var restaurantId = long.Parse(value);
+				return View(await _productService.GetRestaurantProducts(restaurantId));
+			}
+
+			return View();
 		}
 
 		public async Task<IActionResult> Details(long? id)
@@ -36,7 +43,7 @@ namespace Restaurant_Manager.Controllers
 				return NotFound();
 			}
 
-			var product = await _context.Product.FindAsync(id);
+			var product = await _productService.FindProduct(id);
 
 
 			if (product == null)
@@ -71,12 +78,8 @@ namespace Restaurant_Manager.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				using var transaction = _context.Database.BeginTransaction();
-				var restaurant_id = long.Parse(User.FindFirst("RestaurantId")?.Value);
-				product.RestaurantId = restaurant_id;
-				_context.Add(product);
-				await _context.SaveChangesAsync();
-				transaction.Commit();
+				long restaurant_id = long.Parse(User.FindFirst("RestaurantId")?.Value);
+				await _productService.CreateProduct(product, restaurant_id);
 				return RedirectToAction(nameof(Index));
 			}
 			return View(product);
@@ -89,7 +92,7 @@ namespace Restaurant_Manager.Controllers
 				return NotFound();
 			}
 
-			var product = await _context.Product.FindAsync(id);
+			var product = await _productService.FindProduct(id);
 			if (product == null)
 			{
 				return NotFound();
@@ -125,10 +128,7 @@ namespace Restaurant_Manager.Controllers
 			{
 				try
 				{
-					using var transaction = _context.Database.BeginTransaction();
-					_context.Update(product);
-					await _context.SaveChangesAsync();
-					transaction.Commit();
+					await _productService.UpdateProduct(product);
 				}
 				catch (DbUpdateConcurrencyException)
 				{
@@ -153,7 +153,7 @@ namespace Restaurant_Manager.Controllers
 				return NotFound();
 			}
 
-			var product = await _context.Product.FindAsync(id);
+			var product = await _productService.FindProduct(id);
 			if (product == null)
 			{
 				return NotFound();
@@ -180,7 +180,7 @@ namespace Restaurant_Manager.Controllers
 		[ValidateAntiForgeryToken]
 		public async Task<IActionResult> DeleteConfirmed(long id)
 		{
-			var product = await _context.Product.FindAsync(id);
+			var product = await _productService.FindProduct(id);
 
 
 
@@ -191,8 +191,7 @@ namespace Restaurant_Manager.Controllers
 
 				if (authorizationResult.Succeeded)
 				{
-					_context.Product.Remove(product);
-					await _context.SaveChangesAsync();
+					
 				}
 				else if (User.Identity.IsAuthenticated)
 				{
@@ -208,7 +207,7 @@ namespace Restaurant_Manager.Controllers
 
 		private bool ProductExists(long id)
 		{
-			return _context.Product.Any(e => e.Id == id);
+			return _productService.ProductExists(id);
 		}
 	}
 }

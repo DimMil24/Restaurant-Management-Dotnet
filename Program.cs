@@ -5,6 +5,7 @@ using Restaurant_Manager.Areas.Identity;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Policies.Handler;
 using Restaurant_Manager.Policies.Requirement;
+using Restaurant_Manager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,6 +36,8 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.AddSingleton<IAuthorizationHandler, ProductAuthorizationHandler>();
 builder.Services.AddSingleton<IAuthorizationHandler, OrderAuthorizationHandler>();
+builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<OrderService>();
 
 
 
@@ -43,6 +46,7 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseDeveloperExceptionPage();
     app.UseMigrationsEndPoint();
 }
 else
@@ -50,6 +54,15 @@ else
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
+}
+
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+
+    var context = services.GetRequiredService<ApplicationDbContext>();
+    context.Database.EnsureCreated();
+    // DbInitializer.Initialize(context);
 }
 
 app.UseHttpsRedirection();
