@@ -39,7 +39,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, OrderAuthorizationHandler>(
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<RestaurantService>();
-
+builder.Services.AddScoped<UserService>();
 
 
 var app = builder.Build();
