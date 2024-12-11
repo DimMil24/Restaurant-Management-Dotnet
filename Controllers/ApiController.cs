@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
 using Restaurant_Manager.Models.Requests;
+using Restaurant_Manager.Services;
 
 namespace Restaurant_Manager.Controllers
 {
@@ -11,47 +12,29 @@ namespace Restaurant_Manager.Controllers
 	[ApiController]
 	public class ApiController : ControllerBase
 	{
-		private readonly ApplicationDbContext _context;
-		public ApiController(ApplicationDbContext applicationDbContext) 
-		{ 
-			_context = applicationDbContext;
+		private readonly OrderService _orderService;
+		private readonly ProductService _productService;
+		public ApiController(OrderService orderService, ProductService productService)
+		{
+			_orderService = orderService;
+			_productService = productService;
 		}
 
 		[HttpGet]
 		[Route("product/{restaurantId}/{productId}")]
 		public async Task<IActionResult> GetProduct(long restaurantId, long productId)
 		{
-			var Product = await _context.Product.FirstOrDefaultAsync(u => u.Id == productId && u.RestaurantId == restaurantId);
-			return Product == null ? NotFound() : Ok(Product);
+			var product = await _productService.FindProductByIdAndRestaurantId(restaurantId, productId);
+			return product == null ? NotFound() : Ok(product);
 		}
 
 		[HttpPost]
 		[Route("newOrder")]
 		public async Task<IActionResult> NewOrder(NewOrderRequest newOrderRequest)
 		{
-			if (ModelState.IsValid)
-			{
-				using var transaction = _context.Database.BeginTransaction();
-				//var restaurant_id = long.Parse(User.FindFirst("RestaurantId")?.Value);
-				CustomerOrder order = new CustomerOrder() { UserId = User.FindFirstValue(ClaimTypes.NameIdentifier) };
-				var restaurant = await _context.Restaurant.FindAsync(newOrderRequest.RestaurantId);
-				order.Restaurant = restaurant;
-				var prods = new List<OrderProduct>();
-				for (int i = 0; i < newOrderRequest.ItemQuantity.Count; i++)
-				{
-					var prod = await _context.Product.FindAsync(newOrderRequest.ItemQuantity[i].Id);
-					if (prod != null) {
-						var quantity = newOrderRequest.ItemQuantity[i].Quantity;
-						prods.Add(new OrderProduct { Quantity = quantity, Price = prod.Price * quantity, Product = prod, CustomerOrder = order });
-					}
-				}
-				order.OrderProducts = prods;
-				_context.Add(order);
-				await _context.SaveChangesAsync();
-				transaction.Commit();
-				return Ok();
-			}
-			return BadRequest();
+			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			if (userId != null) await _orderService.NewOrder(newOrderRequest, userId);
+			return Ok();
 		}
 	}
 }

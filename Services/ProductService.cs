@@ -13,23 +13,26 @@ namespace Restaurant_Manager.Services
 			_context = context;
 		}
 
-		public async Task<Product> FindProduct(long? id) => await _context.Product.FindAsync(id);
+		public async Task<Product?> FindProduct(long? id) => await _context.Product.FindAsync(id);
+
+		public async Task<Product?> FindProductByIdAndRestaurantId(long? restaurantId, long? productId)
+			=> await _context.Product.FirstOrDefaultAsync(u => u.Id == productId && u.RestaurantId == restaurantId);
 
 		public async Task CreateProduct(Product product, long restaurantId)
 		{
-			using var transaction = _context.Database.BeginTransaction();
+			await using var transaction = await _context.Database.BeginTransactionAsync();
 			product.RestaurantId = restaurantId;
 			_context.Add(product);
 			await _context.SaveChangesAsync();
-			transaction.Commit();
+			await transaction.CommitAsync();
 		}
 
 		public async Task UpdateProduct(Product product)
 		{
-			using var transaction = _context.Database.BeginTransaction();
+			await using var transaction = await _context.Database.BeginTransactionAsync();
 			_context.Update(product);
 			await _context.SaveChangesAsync();
-			transaction.Commit();
+			await transaction.CommitAsync();
 		}
 
 		public async Task DeleteProduct(Product product)
@@ -40,7 +43,7 @@ namespace Restaurant_Manager.Services
 			await transaction.CommitAsync();
 		}
 
-		public async Task<List<Product>> GetRestaurantProducts(long restaurantId)
+		public async Task<List<Product>> GetRestaurantProducts(long? restaurantId)
 		{
 			return await _context.Product.Where(e => e.RestaurantId == restaurantId).ToListAsync();
 		}

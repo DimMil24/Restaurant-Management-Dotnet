@@ -3,29 +3,32 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Services;
 
 namespace Restaurant_Manager.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-		private readonly ApplicationDbContext _context;
+		private readonly RestaurantService _restaurantService;
+		private readonly ProductService _productService;
 
-		public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+		public HomeController(ILogger<HomeController> logger, RestaurantService restaurantService, ProductService productService)
 		{
 			_logger = logger;
-			_context = context;
+			_restaurantService = restaurantService;
+			_productService = productService;
 		}
 
 		public async Task<IActionResult> Index()
         {
-            return View(await _context.Restaurant.ToListAsync());
+            return View(await _restaurantService.GetAllRestaurants());
         }
 
 		public async Task<IActionResult> RestaurantPreview(long? id)
 		{
             ViewBag.Id = id;
-			return View(await _context.Product.Where(pr => pr.RestaurantId==id).ToListAsync());
+			return View(await _productService.GetRestaurantProducts(id));
 		}
 
 		public IActionResult Privacy()

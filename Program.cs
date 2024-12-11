@@ -38,6 +38,7 @@ builder.Services.AddSingleton<IAuthorizationHandler, ProductAuthorizationHandler
 builder.Services.AddSingleton<IAuthorizationHandler, OrderAuthorizationHandler>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<OrderService>();
+builder.Services.AddScoped<RestaurantService>();
 
 
 

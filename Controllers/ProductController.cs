@@ -117,7 +117,7 @@ namespace Restaurant_Manager.Controllers
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Price,Category,Available,Description,RestaurantId")] Product product)
+		public async Task<IActionResult> Edit(long id, [Bind("Id,Name,Price,Category,Available,Description")] Product product)
 		{
 			if (id != product.Id)
 			{
@@ -132,7 +132,7 @@ namespace Restaurant_Manager.Controllers
 				}
 				catch (DbUpdateConcurrencyException)
 				{
-					if (!ProductExists(product.Id))
+					if (!_productService.ProductExists(product.Id))
 					{
 						return NotFound();
 					}
@@ -203,11 +203,6 @@ namespace Restaurant_Manager.Controllers
 				}
 			}
 			return RedirectToAction(nameof(Index));
-		}
-
-		private bool ProductExists(long id)
-		{
-			return _productService.ProductExists(id);
 		}
 	}
 }

@@ -8,22 +8,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Services;
 
 namespace Restaurant_Manager.Controllers
 {
 	[Authorize(Roles = "Owner,Admin")]
 	public class RestaurantController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly RestaurantService _restaurantService;
 
-        public RestaurantController(ApplicationDbContext context)
+        public RestaurantController(RestaurantService restaurantService)
         {
-            _context = context;
+            _restaurantService = restaurantService;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Restaurant.ToListAsync());
+            return View(await _restaurantService.GetAllRestaurants());
         }
 
         public async Task<IActionResult> Details(long? id)
@@ -33,8 +34,7 @@ namespace Restaurant_Manager.Controllers
                 return NotFound();
             }
 
-            var restaurant = await _context.Restaurant
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var restaurant = await _restaurantService.FindRestaurantById(id);
             if (restaurant == null)
             {
                 return NotFound();
@@ -42,21 +42,7 @@ namespace Restaurant_Manager.Controllers
 
             return View(restaurant);
         }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,IsOpen,Description")] Restaurant restaurant)
-        {
-            if (ModelState.IsValid)
-            {
-				using var transaction = _context.Database.BeginTransaction();
-				_context.Add(restaurant);
-                await _context.SaveChangesAsync();
-                transaction.Commit();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(restaurant);
-        }
+        
 
         public async Task<IActionResult> Edit(long? id)
         {
@@ -65,7 +51,7 @@ namespace Restaurant_Manager.Controllers
                 return NotFound();
             }
 
-            var restaurant = await _context.Restaurant.FindAsync(id);
+            var restaurant = await _restaurantService.FindRestaurantById(id);
             if (restaurant == null)
             {
                 return NotFound();
@@ -86,14 +72,11 @@ namespace Restaurant_Manager.Controllers
             {
                 try
                 {
-					using var transaction = _context.Database.BeginTransaction();
-					_context.Update(restaurant);
-                    await _context.SaveChangesAsync();
-                    transaction.Commit();
+					await _restaurantService.UpdateRestaurant(restaurant);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!RestaurantExists(restaurant.Id))
+                    if (!_restaurantService.RestaurantExists(restaurant.Id))
                     {
                         return NotFound();
                     }
@@ -114,8 +97,7 @@ namespace Restaurant_Manager.Controllers
                 return NotFound();
             }
 
-            var restaurant = await _context.Restaurant
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var restaurant = await _restaurantService.FindRestaurantById(id);
             if (restaurant == null)
             {
                 return NotFound();
@@ -128,19 +110,14 @@ namespace Restaurant_Manager.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(long id)
         {
-            var restaurant = await _context.Restaurant.FindAsync(id);
-            if (restaurant != null)
+            var restaurant = await _restaurantService.FindRestaurantById(id);
+            if (restaurant == null)
             {
-                _context.Restaurant.Remove(restaurant);
+                return NotFound();
             }
 
-            await _context.SaveChangesAsync();
+            await _restaurantService.DeleteRestaurant(restaurant);
             return RedirectToAction(nameof(Index));
-        }
-
-        private bool RestaurantExists(long id)
-        {
-            return _context.Restaurant.Any(e => e.Id == id);
         }
     }
 }

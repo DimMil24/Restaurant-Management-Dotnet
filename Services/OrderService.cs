@@ -1,6 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Models.Requests;
 
 namespace Restaurant_Manager.Services
 {
@@ -27,6 +29,27 @@ namespace Restaurant_Manager.Services
 		public async Task<List<CustomerOrder>> GetRestaurantOrders(long? restaurantId)
 		{
 			return await _context.CustomerOrder.Include(e => e.User).Where(e => e.RestaurantId == restaurantId).ToListAsync();
+		}
+
+		public async Task NewOrder(NewOrderRequest newOrderRequest,string userId)
+		{
+			await using var transaction = await _context.Database.BeginTransactionAsync();
+			CustomerOrder order = new CustomerOrder() { UserId = userId };
+			var restaurant = await _context.Restaurant.FindAsync(newOrderRequest.RestaurantId);
+			order.Restaurant = restaurant;
+			var prods = new List<OrderProduct>();
+			for (int i = 0; i < newOrderRequest.ItemQuantity.Count; i++)
+			{
+				var prod = await _context.Product.FindAsync(newOrderRequest.ItemQuantity[i].Id);
+				if (prod != null) {
+					var quantity = newOrderRequest.ItemQuantity[i].Quantity;
+					prods.Add(new OrderProduct { Quantity = quantity, Price = prod.Price * quantity, Product = prod, CustomerOrder = order });
+				}
+			}
+			order.OrderProducts = prods;
+			_context.Add(order);
+			await _context.SaveChangesAsync();
+			await transaction.CommitAsync();
 		}
 
 		public async Task CompleteOrder(CustomerOrder customerOrder)
