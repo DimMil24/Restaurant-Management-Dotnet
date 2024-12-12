@@ -22,11 +22,11 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 		}
 
 		[BindProperty]
-		public InputModel Input { get; set; }
+		public InputModel? Input { get; set; }
 		
-		public string ReturnUrl { get; set; }
+		public string? ReturnUrl { get; set; }
 		
-		public IList<AuthenticationScheme> ExternalLogins { get; set; }
+		public IList<AuthenticationScheme>? ExternalLogins { get; set; }
 		
 		public class InputModel
 		{
@@ -46,19 +46,19 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 			public string ConfirmPassword { get; set; }
 
 		}
-		public async Task OnGetAsync(string returnUrl = null)
+		public async Task OnGetAsync(string? returnUrl = null)
 		{
-			ReturnUrl = returnUrl;
+			if (returnUrl != null) ReturnUrl = returnUrl;
 			ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 		}
 
-		public async Task<IActionResult> OnPostAsync(string returnUrl = null)
+		public async Task<IActionResult> OnPostAsync(string? returnUrl = null)
 		{
 			returnUrl ??= Url.Content("~/");
 			ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 			if (ModelState.IsValid)
 			{
-				await _userService.RegisterUser(Input.UserName, Input.Password);
+				await _userService.RegisterUser(Input!.UserName, Input.Password);
 				return LocalRedirect(returnUrl);
 			}
 			return Page();

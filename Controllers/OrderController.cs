@@ -54,7 +54,7 @@ namespace Restaurant_Manager.Controllers
 			{
 				return View(customerOrder);
 			}
-			else if (User.Identity.IsAuthenticated)
+			else if (User.Identity!.IsAuthenticated)
 			{
 				return new ForbidResult();
 			}
@@ -84,7 +84,7 @@ namespace Restaurant_Manager.Controllers
 			{
 				return View(customerOrder);
 			}
-			else if (User.Identity.IsAuthenticated)
+			else if (User.Identity!.IsAuthenticated)
 			{
 				return new ForbidResult();
 			}

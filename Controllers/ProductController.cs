@@ -57,7 +57,7 @@ namespace Restaurant_Manager.Controllers
 			{
 				return View(product);
 			}
-			else if (User.Identity.IsAuthenticated)
+			else if (User.Identity!.IsAuthenticated)
 			{
 				return new ForbidResult();
 			}
@@ -78,8 +78,8 @@ namespace Restaurant_Manager.Controllers
 		{
 			if (ModelState.IsValid)
 			{
-				long restaurant_id = long.Parse(User.FindFirst("RestaurantId")?.Value);
-				await _productService.CreateProduct(product, restaurant_id);
+				long restaurantId = long.Parse(User.FindFirst("RestaurantId")?.Value!);
+				await _productService.CreateProduct(product, restaurantId);
 				return RedirectToAction(nameof(Index));
 			}
 			return View(product);
@@ -105,7 +105,7 @@ namespace Restaurant_Manager.Controllers
 			{
 				return View(product);
 			}
-			else if (User.Identity.IsAuthenticated)
+			else if (User.Identity!.IsAuthenticated)
 			{
 				return new ForbidResult();
 			}
@@ -166,7 +166,7 @@ namespace Restaurant_Manager.Controllers
 			{
 				return View(product);
 			}
-			else if (User.Identity.IsAuthenticated)
+			else if (User.Identity!.IsAuthenticated)
 			{
 				return new ForbidResult();
 			}
@@ -181,9 +181,7 @@ namespace Restaurant_Manager.Controllers
 		public async Task<IActionResult> DeleteConfirmed(long id)
 		{
 			var product = await _productService.FindProduct(id);
-
-
-
+			
 			if (product != null)
 			{
 				var authorizationResult = await _authorizationService
@@ -191,9 +189,9 @@ namespace Restaurant_Manager.Controllers
 
 				if (authorizationResult.Succeeded)
 				{
-					
+					await _productService.DeleteProduct((product));
 				}
-				else if (User.Identity.IsAuthenticated)
+				else if (User.Identity!.IsAuthenticated)
 				{
 					return new ForbidResult();
 				}

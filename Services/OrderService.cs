@@ -17,10 +17,10 @@ namespace Restaurant_Manager.Services
 
 		public async Task<CustomerOrder> FindOrder(long? id)
 		{
-			return await _context.CustomerOrder
-						.Include(c => c.OrderProducts)
-						.ThenInclude(p => p.Product)
-						.FirstOrDefaultAsync(m => m.Id == id);
+			return (await _context.CustomerOrder
+				.Include(c => c.OrderProducts)!
+				.ThenInclude(p => p.Product)
+				.FirstOrDefaultAsync(m => m.Id == id))!;
 		}
 		
 		public async Task<CustomerOrder?> FindOrderNoDetails(long? id) => await _context.CustomerOrder

@@ -66,7 +66,7 @@ public class UserService
                 await _userManager.UpdateAsync(user);
                 var claims = new List<Claim>
                 {
-                    new Claim("RestaurantId", user.RestaurantId.ToString()), // Add RestaurantId claim
+                    new Claim("RestaurantId", user.RestaurantId.ToString()!), // Add RestaurantId claim
                 };
 
                 if (!await _roleManager.RoleExistsAsync("Owner"))

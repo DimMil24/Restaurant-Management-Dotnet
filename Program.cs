@@ -10,10 +10,10 @@ using Restaurant_Manager.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-var connectionString = builder.Configuration.GetConnectionString("RestaurantDb") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("LocalDb") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
-    options.UseNpgsql(connectionString);
-    options.UseSnakeCaseNamingConvention();
+    options.UseSqlServer(connectionString);
+    // options.UseSnakeCaseNamingConvention();
     });
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -24,7 +24,8 @@ builder.Services.AddDefaultIdentity<CustomIdentityUser>(options => {
     options.Password.RequiredUniqueChars = 0;
     options.Password.RequireUppercase = false;
     options.Password.RequireLowercase = false;
-}).AddRoles<IdentityRole>()
+    options.User.AllowedUserNameCharacters = "";
+    }).AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
