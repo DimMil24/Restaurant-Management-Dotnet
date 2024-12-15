@@ -7,6 +7,7 @@ namespace Restaurant_Manager.Models
     {
         public long Id { get; set; }
         [MaxLength(100)]
+        [Required (AllowEmptyStrings = false)]
         public string Name { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }

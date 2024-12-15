@@ -30,7 +30,7 @@
 			</div>
 			<div class="form-group">
 				<label class="visually-hidden" for="category">Category</label>
-				<select  class="form-select" required id="category" name="category">
+				<select class="form-select" required id="category" name="category">
 					<option disabled>Please select...</option>
 					@foreach (var category in @ViewBag.categories)
 					{
@@ -38,13 +38,14 @@
 					}
 				</select>
 			</div>
-			<div class="form-floating mb-3">
-				<input disabled type="text" class="form-control" id="newCategory" name="category" placeholder="desc">
-				<label for="newCategory" class="form-label">New Category</label>
+			<div class="form-group">
+				<label asp-for="Category.Name" class="control-label">New Category</label>
+				<input asp-for="Category.Name" type="text" class="form-control" disabled>
+				<span asp-validation-for="Category.Name" class="text-danger"></span>
 			</div>
 			<div class="col-4">
-				<input type="checkbox" name="is_user" id="isNewCategory" onclick="toggleNewCategory()"/>
 				<label for="isNewCategory" class="form-label">Is New Category</label>
+				<input type="checkbox" name="is_user" id="isNewCategory" onclick="toggleNewCategory()"/>
 			</div>
 			<div class="form-group">
 				<input type="submit" value="Create" class="btn btn-primary" />
@@ -59,7 +60,7 @@
 
 <script>
 	function toggleNewCategory(){
-		var newCategory = document.getElementById("newCategory");
+		var newCategory = document.getElementById("Category_Name");
 		var category = document.getElementById("category");
 		var checkbox = document.getElementById("isNewCategory");
 		if (checkbox.checked){
