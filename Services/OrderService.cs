@@ -26,7 +26,7 @@ namespace Restaurant_Manager.Services
 		public async Task<CustomerOrder?> FindOrderNoDetails(long? id) => await _context.CustomerOrder
 											.FirstOrDefaultAsync(m => m.Id == id);
 
-		public async Task<List<CustomerOrder>> GetRestaurantOrders(long? restaurantId)
+		public async Task<List<CustomerOrder>> GetRestaurantOrders(Guid? restaurantId)
 		{
 			return await _context.CustomerOrder.Include(e => e.User).Where(e => e.RestaurantId == restaurantId).ToListAsync();
 		}

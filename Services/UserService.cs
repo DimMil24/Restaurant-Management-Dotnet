@@ -62,7 +62,7 @@ public class UserService
                 var addedRestaurant = _context.ChangeTracker.Entries().FirstOrDefault(x => x.State == EntityState.Added);
                 await _context.SaveChangesAsync();
                 if (addedRestaurant != null) 
-                    user.RestaurantId = addedRestaurant.CurrentValues.GetValue<long>("Id");
+                    user.RestaurantId = addedRestaurant.CurrentValues.GetValue<Guid>("Id");
                 await _userManager.UpdateAsync(user);
                 var claims = new List<Claim>
                 {

@@ -14,7 +14,7 @@ namespace Restaurant_Manager.Policies.Handler
 				return Task.CompletedTask;
 			}
 
-			if (long.Parse(restaurantIdClaim.Value) == resource.RestaurantId)
+			if (Guid.Parse(restaurantIdClaim.Value) == resource.RestaurantId)
 			{
 				context.Succeed(requirement);
 			}

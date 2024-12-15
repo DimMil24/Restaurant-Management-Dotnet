@@ -2,7 +2,7 @@
 {
 	public class NewOrderRequest
 	{
-		public long RestaurantId {  get; set; }
+		public Guid RestaurantId {  get; set; }
 		public required List<ItemQuantityRequest> ItemQuantity { get; set; }
 	}
 }

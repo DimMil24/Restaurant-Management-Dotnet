@@ -22,7 +22,7 @@ namespace Restaurant_Manager.Controllers
 
 		[HttpGet]
 		[Route("product/{restaurantId}/{productId}")]
-		public async Task<IActionResult> GetProduct(long restaurantId, long productId)
+		public async Task<IActionResult> GetProduct(Guid restaurantId, long productId)
 		{
 			var product = await _productService.FindProductByIdAndRestaurantId(restaurantId, productId);
 			return product == null ? NotFound() : Ok(product);

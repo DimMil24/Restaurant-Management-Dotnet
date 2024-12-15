@@ -10,7 +10,7 @@ namespace Restaurant_Manager.Models
         [DisplayFormat(DataFormatString = "{0:dd-MM-yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; } = DateTimeOffset.Now.UtcDateTime;
         public bool Open { get; set; } = true;
-        public long RestaurantId { get; set; }
+        public Guid RestaurantId { get; set; }
         public required string UserId { get; set; }
 
         public List<OrderProduct>? OrderProducts { get; set; }

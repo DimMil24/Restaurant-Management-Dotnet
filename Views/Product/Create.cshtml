@@ -24,14 +24,27 @@
 				<span asp-validation-for="Price" class="text-danger"></span>
 			</div>
 			<div class="form-group">
-				<label asp-for="Category" class="control-label"></label>
-				<select asp-for="Category" class="form-control" asp-items="@Html.GetEnumSelectList<ProductCategory>()"></select>
-				<span asp-validation-for="Category" class="text-danger"></span>
-			</div>
-			<div class="form-group">
 				<label asp-for="Description" class="control-label"></label>
 				<input asp-for="Description" class="form-control" />
 				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<div class="form-group">
+				<label class="visually-hidden" for="category">Category</label>
+				<select  class="form-select" required id="category" name="category">
+					<option disabled>Please select...</option>
+					@foreach (var category in @ViewBag.categories)
+					{
+						<option value="@category.Name">@category.Name</option>
+					}
+				</select>
+			</div>
+			<div class="form-floating mb-3">
+				<input disabled type="text" class="form-control" id="newCategory" name="category" placeholder="desc">
+				<label for="newCategory" class="form-label">New Category</label>
+			</div>
+			<div class="col-4">
+				<input type="checkbox" name="is_user" id="isNewCategory" onclick="toggleNewCategory()"/>
+				<label for="isNewCategory" class="form-label">Is New Category</label>
 			</div>
 			<div class="form-group">
 				<input type="submit" value="Create" class="btn btn-primary" />
@@ -43,6 +56,21 @@
 <div>
 	<a asp-action="Index">Back to List</a>
 </div>
+
+<script>
+	function toggleNewCategory(){
+		var newCategory = document.getElementById("newCategory");
+		var category = document.getElementById("category");
+		var checkbox = document.getElementById("isNewCategory");
+		if (checkbox.checked){
+			category.disabled = true;
+			newCategory.disabled = false;
+		} else {
+			category.disabled = false;
+			newCategory.disabled = true;
+		}
+	}
+</script>
 
 @section Scripts {
 	@{

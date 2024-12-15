@@ -1,4 +1,4 @@
-﻿@model IEnumerable<Restaurant_Manager.Models.Product>
+@model IEnumerable<Restaurant_Manager.Models.Category>
 
 @{
     ViewData["Title"] = "Index";
@@ -9,8 +9,6 @@
 
 <p>
     <a asp-action="Create">Create New</a>
-    <br/>
-    <a asp-controller="Category" asp-action="Index">Manage Categories</a>
 </p>
 <table class="table">
     <thead>
@@ -19,16 +17,7 @@
                 @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Price)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Category)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Description)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Available)
+                @Html.DisplayNameFor(model => model.Restaurant)
             </th>
             <th></th>
         </tr>
@@ -40,16 +29,7 @@
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Price)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Category.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Description)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Available)
+                @Html.DisplayFor(modelItem => item.Restaurant.Id)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

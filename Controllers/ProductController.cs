@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Models.Requests;
 using Restaurant_Manager.Services;
 
 namespace Restaurant_Manager.Controllers
@@ -16,12 +17,14 @@ namespace Restaurant_Manager.Controllers
 	public class ProductController : Controller
 	{
 		private readonly ProductService _productService;
+		private readonly CategoryService _categoryService;
 		private readonly IAuthorizationService _authorizationService;
 
-		public ProductController(ProductService productService, IAuthorizationService authorizationService)
+		public ProductController(ProductService productService, IAuthorizationService authorizationService, CategoryService categoryService)
 		{
 			_productService = productService;
 			_authorizationService = authorizationService;
+			_categoryService = categoryService;
 		}
 
 		public async Task<IActionResult> Index()
@@ -29,7 +32,7 @@ namespace Restaurant_Manager.Controllers
 			var value = User.FindFirst("RestaurantId")?.Value;
 			if (value != null)
 			{
-				var restaurantId = long.Parse(value);
+				var restaurantId = Guid.Parse(value);
 				return View(await _productService.GetRestaurantProducts(restaurantId));
 			}
 
@@ -67,22 +70,27 @@ namespace Restaurant_Manager.Controllers
 			}
 		}
 
-		public IActionResult Create()
+		public async Task<IActionResult> Create()
 		{
+			Guid restaurantId = Guid.Parse(User.FindFirst("RestaurantId")?.Value!);
+			ViewBag.categories = await _categoryService.GetCategoriesByRestaurant(restaurantId);
 			return View();
 		}
 
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Name,Price,Category,Description")] Product product)
+		public async Task<IActionResult> Create(NewProductRequest productRequest)
 		{
 			if (ModelState.IsValid)
 			{
-				long restaurantId = long.Parse(User.FindFirst("RestaurantId")?.Value!);
-				await _productService.CreateProduct(product, restaurantId);
-				return RedirectToAction(nameof(Index));
+				Guid restaurantId = Guid.Parse(User.FindFirst("RestaurantId")?.Value!);
+				if (_productService.ProductExistsByNameAndRestaurant(restaurantId,productRequest.Name)) //TODO Create message
+				{
+					return RedirectToAction(nameof(Index));
+				}
+				await _productService.CreateProduct(productRequest, restaurantId);
 			}
-			return View(product);
+			return RedirectToAction(nameof(Index));
 		}
 
 		public async Task<IActionResult> Edit(long? id)

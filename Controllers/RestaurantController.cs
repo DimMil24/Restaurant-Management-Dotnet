@@ -27,7 +27,7 @@ namespace Restaurant_Manager.Controllers
             return View(await _restaurantService.GetAllRestaurants());
         }
 
-        public async Task<IActionResult> Details(long? id)
+        public async Task<IActionResult> Details(Guid? id)
         {
             if (id == null)
             {
@@ -44,7 +44,7 @@ namespace Restaurant_Manager.Controllers
         }
         
 
-        public async Task<IActionResult> Edit(long? id)
+        public async Task<IActionResult> Edit(Guid? id)
         {
             if (id == null)
             {
@@ -61,7 +61,7 @@ namespace Restaurant_Manager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(long id, [Bind("Id,Name,IsOpen,Description")] Restaurant restaurant)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,IsOpen,Description")] Restaurant restaurant)
         {
             if (id != restaurant.Id)
             {
@@ -90,7 +90,7 @@ namespace Restaurant_Manager.Controllers
             return View(restaurant);
         }
 
-        public async Task<IActionResult> Delete(long? id)
+        public async Task<IActionResult> Delete(Guid? id)
         {
             if (id == null)
             {
@@ -108,7 +108,7 @@ namespace Restaurant_Manager.Controllers
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(long id)
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
             var restaurant = await _restaurantService.FindRestaurantById(id);
             if (restaurant == null)

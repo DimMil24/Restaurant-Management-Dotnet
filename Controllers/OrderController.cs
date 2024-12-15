@@ -29,7 +29,7 @@ namespace Restaurant_Manager.Controllers
 			var value = User.FindFirst("RestaurantId")?.Value;
 			if (value == null) return View();
 			
-			var restaurantId = long.Parse(value);
+			var restaurantId = Guid.Parse(value);
 			return View(await _orderService.GetRestaurantOrders(restaurantId));
 		}
 

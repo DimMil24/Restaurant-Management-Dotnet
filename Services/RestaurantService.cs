@@ -18,7 +18,7 @@ public class RestaurantService
         return await _context.Restaurant.ToListAsync();
     }
 
-    public async Task<Restaurant?> FindRestaurantById(long? id)
+    public async Task<Restaurant?> FindRestaurantById(Guid? id)
     {
         return await _context.Restaurant.FirstOrDefaultAsync(m => m.Id == id);
     }
@@ -39,7 +39,7 @@ public class RestaurantService
         await transaction.CommitAsync();
     }
 
-    public bool RestaurantExists(long id)
+    public bool RestaurantExists(Guid id)
     {
         return _context.Restaurant.Any(e => e.Id == id);
     }
