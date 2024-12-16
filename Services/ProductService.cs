@@ -16,7 +16,7 @@ namespace Restaurant_Manager.Services
 			_categoryService = categoryService;
 		}
 
-		public async Task<Product?> FindProduct(long? id) => await _context.Product.FindAsync(id);
+		public async Task<Product?> FindProduct(long? id) => await _context.Product.Include(c => c.Category).FirstOrDefaultAsync(p => p.Id == id);
 
 		public async Task<Product?> FindProductByIdAndRestaurantId(Guid? restaurantId, long? productId)
 			=> await _context.Product.FirstOrDefaultAsync(u => u.Id == productId && u.RestaurantId == restaurantId);

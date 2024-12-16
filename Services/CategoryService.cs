@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Models.Response;
 
 namespace Restaurant_Manager.Services;
 
@@ -13,9 +14,24 @@ public class CategoryService
         _context = context;
     }
 
-    public async Task<List<Category>> GetCategoriesAsync()
+    public async Task<List<CategoryCountResponse>> GetCategoriesCountAsync(Guid restaurantId)
     {
-        return await _context.Category.Include(r => r.Restaurant).ToListAsync();
+        var categoryProductCounts = await _context.Category
+            .Where(e => e.RestaurantId == restaurantId)
+            .GroupJoin(
+                _context.Product,
+                category => category.Id,
+                product => product.CategoryId,
+                (category, products) => new
+                    CategoryCountResponse()
+                {
+                    Id = category.Id,
+                    CategoryName = category.Name,
+                    ProductCount = products.Count()
+                })
+            .ToListAsync();
+        
+        return categoryProductCounts;
     }
 
     public async Task<Category?> GetCategoryByIdAsync(long id)

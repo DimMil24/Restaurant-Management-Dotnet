@@ -20,7 +20,8 @@ namespace Restaurant_Manager.Controllers
         // GET: Category
         public async Task<IActionResult> Index()
         {
-            return View(await _categoryService.GetCategoriesAsync());
+            Guid restaurantId = Guid.Parse(User.FindFirst("RestaurantId")?.Value!);
+            return View(await _categoryService.GetCategoriesCountAsync(restaurantId));
         }
 
         // GET: Category/Details/5

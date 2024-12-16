@@ -36,22 +36,22 @@
     <tbody>
 @foreach (var item in Model) {
         <tr>
-            <td>
+            <td class="align-middle">
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-            <td>
+            <td class="align-middle">
                 @Html.DisplayFor(modelItem => item.Price)
             </td>
-            <td>
+            <td class="align-middle">
                 @Html.DisplayFor(modelItem => item.Category.Name)
             </td>
-            <td>
+            <td class="align-middle">
                 @Html.DisplayFor(modelItem => item.Description)
             </td>
-            <td>
+            <td class="align-middle">
                 @Html.DisplayFor(modelItem => item.Available)
             </td>
-            <td>
+            <td class="align-middle">
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
