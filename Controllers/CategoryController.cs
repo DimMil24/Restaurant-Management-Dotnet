@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Models;
 using Restaurant_Manager.Services;
@@ -11,10 +10,12 @@ namespace Restaurant_Manager.Controllers
     public class CategoryController : Controller
     {
         private readonly CategoryService _categoryService;
+        private readonly IAuthorizationService _authorizationService;
 
-        public CategoryController(CategoryService categoryService)
+        public CategoryController(CategoryService categoryService, IAuthorizationService authorizationService)
         {
             _categoryService = categoryService;
+            _authorizationService = authorizationService;
         }
 
         // GET: Category
@@ -36,6 +37,22 @@ namespace Restaurant_Manager.Controllers
             if (category == null)
             {
                 return NotFound();
+            }
+            
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, category, "RestaurantPolicy");
+
+            if (authorizationResult.Succeeded)
+            {
+                return View(category);
+            }
+            else if (User.Identity!.IsAuthenticated)
+            {
+                return new ForbidResult();
+            }
+            else
+            {
+                return new ChallengeResult();
             }
 
             return View(category);
@@ -76,6 +93,23 @@ namespace Restaurant_Manager.Controllers
             {
                 return NotFound();
             }
+            
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, category, "RestaurantPolicy");
+
+            if (authorizationResult.Succeeded)
+            {
+                return View(category);
+            }
+            else if (User.Identity!.IsAuthenticated)
+            {
+                return new ForbidResult();
+            }
+            else
+            {
+                return new ChallengeResult();
+            }
+            
             return View(category);
         }
 
@@ -129,6 +163,22 @@ namespace Restaurant_Manager.Controllers
             {
                 return NotFound();
             }
+            
+            var authorizationResult = await _authorizationService
+                .AuthorizeAsync(User, category, "RestaurantPolicy");
+
+            if (authorizationResult.Succeeded)
+            {
+                return View(category);
+            }
+            else if (User.Identity!.IsAuthenticated)
+            {
+                return new ForbidResult();
+            }
+            else
+            {
+                return new ChallengeResult();
+            }
 
             return View(category);
         }
@@ -141,9 +191,22 @@ namespace Restaurant_Manager.Controllers
             var category = await _categoryService.GetCategoryByIdAsync(id);
             if (category != null)
             {
-                await _categoryService.DeleteCategoryAsync(category);
-            }
+                var authorizationResult = await _authorizationService
+                                                .AuthorizeAsync(User, category, "RestaurantPolicy");
 
+                if (authorizationResult.Succeeded)
+                {
+                    await _categoryService.DeleteCategoryAsync(category);
+                }
+                else if (User.Identity!.IsAuthenticated)
+                {
+                    return new ForbidResult();
+                }
+                else
+                {
+                    return new ChallengeResult();
+                }
+            }
             return RedirectToAction(nameof(Index));
         }
 
