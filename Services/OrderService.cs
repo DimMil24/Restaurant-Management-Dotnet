@@ -9,10 +9,12 @@ namespace Restaurant_Manager.Services
 	public class OrderService
 	{
 		private readonly ApplicationDbContext _context;
+		private readonly ProductService _productService;
 
-		public OrderService(ApplicationDbContext context)
+		public OrderService(ApplicationDbContext context, ProductService productService)
 		{
 			_context = context;
+			_productService = productService;
 		}
 
 		public async Task<CustomerOrder> FindOrder(long? id)
@@ -40,7 +42,8 @@ namespace Restaurant_Manager.Services
 			var prods = new List<OrderProduct>();
 			for (int i = 0; i < newOrderRequest.ItemQuantity.Count; i++)
 			{
-				var prod = await _context.Product.FindAsync(newOrderRequest.ItemQuantity[i].Id);
+				var prod = await _productService.FindProductByIdAndRestaurantId(restaurant.Id,newOrderRequest.ItemQuantity[i].Id);
+				
 				if (prod != null) {
 					var quantity = newOrderRequest.ItemQuantity[i].Quantity;
 					prods.Add(new OrderProduct { Quantity = quantity, Price = prod.Price * quantity, Product = prod, CustomerOrder = order });

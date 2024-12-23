@@ -81,6 +81,21 @@ public class CategoryService
 
     public async Task<List<Category>> GetCategoriesByRestaurant(Guid restaurantId)
     {
-        return await _context.Category.Include(r => r.Restaurant).Where(r => r.RestaurantId == restaurantId).ToListAsync();
+        return await _context.Category
+            .Include(r => r.Restaurant)
+            .Where(r => r.RestaurantId == restaurantId)
+            .OrderBy(r => r.Id)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    public async Task<List<Category>> GetCategoriesAndProducts(Guid restaurantId)
+    {
+        return await _context.Category
+            .Include(r => r.Restaurant)
+            .Include(p => p.Products)
+            .Where(r => r.RestaurantId == restaurantId)
+            .AsNoTracking()
+            .ToListAsync();
     }
 }

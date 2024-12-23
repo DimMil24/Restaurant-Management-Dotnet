@@ -10,4 +10,6 @@ public class Category
     public Guid RestaurantId { get; set; }
     
     public Restaurant? Restaurant { get; set; }
+    
+    public List<Product>? Products { get; set; }
 }

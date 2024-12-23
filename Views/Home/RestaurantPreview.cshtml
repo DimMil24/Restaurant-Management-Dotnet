@@ -1,51 +1,74 @@
-﻿@model IEnumerable<Product>
+﻿@model IEnumerable<Category>
 @{
     ViewData["Title"] = "View";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container-md">
-    <div class="row mt-2">
+<div class="container-fluid px-4">
+    <div class="row mt-2 gx-5">
         <div class="col-3 mt-4">
-
-        </div>
-        <div class="col-md-6">
-            @foreach (var item in Model)
-            {
-                <ul class="list-group mt-4">
-                    <li class="list-group-item d-flex align-items-center justify-content-between">
-                        <div>
-                            <div class="fw-bold">
-                            @Html.DisplayFor(modelItem => item.Name)
-                            </div>
-                            <div class="fw-light">
-                                @Html.DisplayFor(modelItem => item.Description)
-                            </div>
-                            <div>
-                                @Html.DisplayFor(modelItem => item.Price) €
-                            </div>
-                        </div>
-                        <div>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-id="@Html.DisplayFor(modelItem => item.Id)" data-bs-target="#OrderModal">
-                                Add
-                            </button>
-                        </div>
-                    </li>
+            <div class="sticky-md-top d-none d-md-block ms-5 overflow-y-auto vh-100 p-3">
+                <h2 class="fw-semibold"> Categories</h2>
+                <ul class="list-group list-group-flush">
+                    @foreach (var item in ViewBag.Categories)
+                    {
+                        <li class="list-group-item border-0 mt-2">@item.Name</li>
+                    }
                 </ul>
-            }   
+            </div>
+        </div>
+        <div class="col-md-6 mt-4 bg-secondary-subtle rounded">
+            <ul class="list-group list-group-flush mt-4">
+                @foreach (var item in Model)
+                {
+                    <li class="list-group-item mt-2 mb-2 rounded bg-secondary-subtle border-0">
+                        <div>
+                            <h3 class="fw-semibold">@item.Name</h3>
+                        </div>
+                        <ul class="list-group list-group-flush border-top border-black">
+                            
+                            <li class="list-group-item bg-secondary-subtle">
+                                @foreach (var product in item.Products!)
+                                {
+                                    <div class="d-flex align-items-center justify-content-between mt-2 mb-2 p-3 border-bottom border-secondary-subtle">
+                                        <div>
+                                            <div class="fw-bold">
+                                                @Html.DisplayFor(p => product.Name)
+                                            </div>
+                                            <div class="fw-light">
+                                                @Html.DisplayFor(modelItem => product.Description)
+                                            </div>
+                                            <div>
+                                                @Html.DisplayFor(modelItem => product.Price) €
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-id="@Html.DisplayFor(modelItem => product.Id)" data-bs-target="#OrderModal">
+                                                Add To Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                            </li>
+                        </ul>
+                    </li>
+                }
+            </ul>
         </div>
         <div class="col-md-3 mt-4">
-            <div class="row card">
-                <div class="card-header">
-                    Your Order
+            <div class="sticky-md-top p-4 bg-secondary-subtle vh-100 d-flex flex-column justify-content-md-start rounded">
+                <div>
+                    <h3>Your Cart</h3>
+                    <div class="row border-0 bg-secondary-subtle">
+                        <ul class="list-group list-group-flush" id="cartList"></ul>
+                    </div>
+                    <div id="TotalPrice" class="row col offset-md-6 mt-5" hidden></div>
                 </div>
-                <ul class="list-group list-group-flush mb-auto" id="cartList"></ul>
-            </div>
-            <div id="TotalPrice" class="row col offset-md-6 mt-5" hidden></div>
-            <div class="row mt-2">
-                <button id="MakeOrder" class="btn btn-primary" type="button" hidden>
-                    Order
-                </button>
+                <div class="row mt-2">
+                    <button id="MakeOrder" class="btn btn-primary" type="button" hidden>
+                        Order
+                    </button>
+                </div>
             </div>
         </div>
         <div class="modal fade" id="OrderModal" data-restaurant="@ViewBag.Id" tabindex="-1" role="dialog" aria-labelledby="OrderModal" aria-hidden="true">
@@ -110,9 +133,7 @@
 
             makeOrder.addEventListener('click', () => {
                 fetch("/api/v1/newOrder", {
-                    // Adding method type
                     method: "POST",
-                    // Adding body or contents to send
                     body: JSON.stringify({
                         restaurantId: restaurantId,
                         itemQuantity: cart,
@@ -144,7 +165,7 @@
                     price: document.getElementById("ProductPrice").dataset.price,
                 }]
                 const li = document.createElement('li')
-                li.className = 'list-group-item'
+                li.className = 'list-group-item bg-secondary-subtle border-0'
                 li.innerText = document.getElementById("ProductTitle").textContent + ' ' +
                     document.getElementById("ProductPrice").textContent + '  x' + count
                 li.setAttribute("id", `product_${product_id}`)

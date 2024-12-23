@@ -1,8 +1,6 @@
 ﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Restaurant_Manager.Data;
-using Restaurant_Manager.Models;
 using Restaurant_Manager.Models.Requests;
 using Restaurant_Manager.Services;
 
@@ -28,13 +26,18 @@ namespace Restaurant_Manager.Controllers
 			return product == null ? NotFound() : Ok(product);
 		}
 
+		// [Authorize(Roles = "Owner,Admin,User")]
 		[HttpPost]
 		[Route("newOrder")]
 		public async Task<IActionResult> NewOrder(NewOrderRequest newOrderRequest)
 		{
 			var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			if (userId != null) await _orderService.NewOrder(newOrderRequest, userId);
-			return Ok();
+			if (userId != null)
+			{
+				await _orderService.NewOrder(newOrderRequest, userId);
+				return Created();
+			}
+			return Unauthorized();
 		}
 	}
 }

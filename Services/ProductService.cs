@@ -72,7 +72,11 @@ namespace Restaurant_Manager.Services
 
 		public async Task<List<Product>> GetRestaurantProducts(Guid? restaurantId)
 		{
-			return await _context.Product.Include(c => c.Category).Where(e => e.RestaurantId == restaurantId).ToListAsync();
+			return await _context.Product
+				.Include(c => c.Category)
+				.Where(e => e.RestaurantId == restaurantId)
+				.OrderBy(e => e.Category.Id)
+				.ToListAsync();
 		}
 
 		public bool ProductExists(long id)

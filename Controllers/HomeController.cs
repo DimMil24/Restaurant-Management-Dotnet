@@ -12,12 +12,14 @@ namespace Restaurant_Manager.Controllers
         private readonly ILogger<HomeController> _logger;
 		private readonly RestaurantService _restaurantService;
 		private readonly ProductService _productService;
+		private readonly CategoryService _categoryService;
 
-		public HomeController(ILogger<HomeController> logger, RestaurantService restaurantService, ProductService productService)
+		public HomeController(ILogger<HomeController> logger, RestaurantService restaurantService, ProductService productService, CategoryService categoryService)
 		{
 			_logger = logger;
 			_restaurantService = restaurantService;
 			_productService = productService;
+			_categoryService = categoryService;
 		}
 
 		public async Task<IActionResult> Index()
@@ -25,16 +27,12 @@ namespace Restaurant_Manager.Controllers
             return View(await _restaurantService.GetAllRestaurants());
         }
 
-		public async Task<IActionResult> RestaurantPreview(Guid? id)
+		public async Task<IActionResult> RestaurantPreview(Guid id)
 		{
             ViewBag.Id = id;
-			return View(await _productService.GetRestaurantProducts(id));
+            ViewBag.Categories = await _categoryService.GetCategoriesByRestaurant(id);
+			return View(await _categoryService.GetCategoriesAndProducts(id));
 		}
-
-		public IActionResult Privacy()
-        {
-            return View();
-        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
