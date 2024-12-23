@@ -9,7 +9,7 @@ namespace Restaurant_Manager.Models
         public long Quantity { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Price { get; set; }
-        public long? ProductId { get; set; }
+        public long ProductId { get; set; }
         public long CustomerOrderId { get; set; }
 
         public CustomerOrder? CustomerOrder { get; set; }

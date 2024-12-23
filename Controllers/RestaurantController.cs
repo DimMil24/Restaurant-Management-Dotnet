@@ -34,7 +34,7 @@ namespace Restaurant_Manager.Controllers
                 return NotFound();
             }
 
-            var restaurant = await _restaurantService.FindRestaurantById(id);
+            var restaurant = await _restaurantService.FindRestaurantByIdWithTags(id);
             if (restaurant == null)
             {
                 return NotFound();

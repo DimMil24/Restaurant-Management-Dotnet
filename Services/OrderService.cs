@@ -50,7 +50,7 @@ namespace Restaurant_Manager.Services
 				}
 			}
 			order.OrderProducts = prods;
-			_context.Add(order);
+			await _context.AddAsync(order);
 			await _context.SaveChangesAsync();
 			await transaction.CommitAsync();
 		}

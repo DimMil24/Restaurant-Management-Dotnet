@@ -14,18 +14,22 @@ public class UserService
     private readonly UserManager<CustomIdentityUser> _userManager;
     private readonly IUserStore<CustomIdentityUser> _userStore;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly TagService _tagService;
+    
     
     public UserService(ApplicationDbContext context, 
         RoleManager<IdentityRole> roleManager, 
         IUserStore<CustomIdentityUser> userStore,
         UserManager<CustomIdentityUser> userManager, 
-        SignInManager<CustomIdentityUser> signInManager)
+        SignInManager<CustomIdentityUser> signInManager,
+        TagService tagService)
     {
         _context = context;
         _roleManager = roleManager;
         _userStore = userStore;
         _userManager = userManager;
         _signInManager = signInManager;
+        _tagService = tagService;
     }
 
     public async Task RegisterUser(String username, String password)
@@ -48,7 +52,7 @@ public class UserService
         await transaction.CommitAsync();
     }
 
-    public async Task RegisterRestaurantOwner(String username, String password,String restaurantName, String restaurantDescription)
+    public async Task RegisterRestaurantOwner(String username, String password,String restaurantName, String restaurantDescription, long[]? tags)
     {
         {
             await using var transaction = await _context.Database.BeginTransactionAsync();
@@ -61,8 +65,12 @@ public class UserService
                 _context.Add(newRestaurant);
                 var addedRestaurant = _context.ChangeTracker.Entries().FirstOrDefault(x => x.State == EntityState.Added);
                 await _context.SaveChangesAsync();
-                if (addedRestaurant != null) 
-                    user.RestaurantId = addedRestaurant.CurrentValues.GetValue<Guid>("Id");
+                if (addedRestaurant != null)
+                {
+                    var restaurantId = addedRestaurant.CurrentValues.GetValue<Guid>("Id");
+                    user.RestaurantId = restaurantId;
+                    if (tags is not null) await _tagService.AddTagsToRestaurant(tags, restaurantId);
+                }
                 await _userManager.UpdateAsync(user);
                 var claims = new List<Claim>
                 {

@@ -32,13 +32,16 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 	{
 		private readonly SignInManager<CustomIdentityUser> _signInManager;
 		private readonly UserService _userService;
+		private readonly TagService _tagService;
 
 		public RegisterRestaurantModel(
 			SignInManager<CustomIdentityUser> signInManager,
-			UserService userService)
+			UserService userService,
+			TagService tagService)
 		{
 			_signInManager = signInManager;
 			_userService = userService;
+			_tagService = tagService;
 		}
 		
 		[BindProperty]
@@ -72,6 +75,9 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 			[Required]
 			[Display(Name = "Restaurant Description")]
 			public string RestaurantDescription { get; set; }
+			
+			[Display(Name = "Restaurant Tags")]
+			public long[] Tags { get; set; }
 		}
 
 
@@ -79,6 +85,7 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 		{
 			ReturnUrl = returnUrl;
 			ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+			ViewData["Tags"] = await _tagService.GetAllTags();
 		}
 
 		public async Task<IActionResult> OnPostAsync(string returnUrl = null)
@@ -87,7 +94,7 @@ namespace Restaurant_Manager.Areas.Identity.Pages.Account
 			ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 			if (ModelState.IsValid)
 			{
-				await _userService.RegisterRestaurantOwner(Input.UserName, Input.Password, Input.RestaurantName, Input.RestaurantDescription);
+				await _userService.RegisterRestaurantOwner(Input.UserName, Input.Password, Input.RestaurantName, Input.RestaurantDescription,Input.Tags);
 				return LocalRedirect(returnUrl);
 			}
 			return Page();

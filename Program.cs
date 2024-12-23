@@ -43,6 +43,7 @@ builder.Services.AddScoped<OrderService>();
 builder.Services.AddScoped<RestaurantService>();
 builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<CategoryService>();
+builder.Services.AddScoped<TagService>();
 
 var app = builder.Build();
 

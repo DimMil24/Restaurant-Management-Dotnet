@@ -22,6 +22,14 @@ public class RestaurantService
     {
         return await _context.Restaurant.FirstOrDefaultAsync(m => m.Id == id);
     }
+    
+    public async Task<Restaurant?> FindRestaurantByIdWithTags(Guid? id)
+    {
+        return await _context.Restaurant
+            .Include(r => r.Tags)
+            .ThenInclude(t => t.Tag)
+            .FirstOrDefaultAsync(m => m.Id == id);
+    }
 
     public async Task DeleteRestaurant(Restaurant restaurant)
     {

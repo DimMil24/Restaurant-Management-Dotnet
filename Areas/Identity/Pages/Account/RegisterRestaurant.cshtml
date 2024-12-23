@@ -1,4 +1,6 @@
 ﻿@page
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using Restaurant_Manager.Models
 @model RegisterRestaurantModel
 @{
     ViewData["Title"] = "Register Restaurant";
@@ -37,6 +39,16 @@
                 <input asp-for="Input.RestaurantDescription" class="form-control" placeholder="" />
                 <label asp-for="Input.RestaurantDescription" class="control-label"></label>
                 <span asp-validation-for="Input.RestaurantDescription" class="text-danger"></span>
+            </div>
+            <div class="form-check mb-3 overflow-y-auto" style="height: 150px">
+                <label class="control-label"></label>
+                @{
+                    var tags = ViewData["Tags"] as List<Tag>;
+                    foreach (var t in tags)
+                    {
+                        <input name="Input.Tags" type="checkbox" class="form-check-input" value="@t.Id"/> @t.Name<br/>
+                    }
+                }
             </div>
             <button id="registerSubmit" type="submit" class="w-100 btn btn-lg btn-primary">Register</button>
         </form>
