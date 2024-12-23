@@ -56,18 +56,14 @@ namespace Restaurant_Manager.Services
 
 		public async Task UpdateProduct(Product product)
 		{
-			await using var transaction = await _context.Database.BeginTransactionAsync();
 			_context.Update(product);
 			await _context.SaveChangesAsync();
-			await transaction.CommitAsync();
 		}
 
 		public async Task DeleteProduct(Product product)
 		{
-			await using var transaction = await _context.Database.BeginTransactionAsync();
 			_context.Product.Remove(product);
 			await _context.SaveChangesAsync();
-			await transaction.CommitAsync();
 		}
 
 		public async Task<List<Product>> GetRestaurantProducts(Guid? restaurantId)

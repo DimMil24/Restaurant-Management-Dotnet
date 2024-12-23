@@ -57,19 +57,15 @@ namespace Restaurant_Manager.Services
 
 		public async Task CompleteOrder(CustomerOrder customerOrder)
 		{
-			await using var transaction = await _context.Database.BeginTransactionAsync();
 			customerOrder.Open = false;
 			_context.Update(customerOrder);
 			await _context.SaveChangesAsync();
-			await transaction.CommitAsync();
 		}
 
 		public async Task DeleteOrder(CustomerOrder customerOrder)
 		{
-			await using var transaction = await _context.Database.BeginTransactionAsync();
 			_context.CustomerOrder.Remove(customerOrder);
 			await _context.SaveChangesAsync();
-			await transaction.CommitAsync();
 		}
 	}
 }

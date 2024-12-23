@@ -25,18 +25,14 @@ public class RestaurantService
 
     public async Task DeleteRestaurant(Restaurant restaurant)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
         _context.Restaurant.Remove(restaurant);
         await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
     }
 
     public async Task UpdateRestaurant(Restaurant restaurant)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
         _context.Update(restaurant);
         await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
     }
 
     public bool RestaurantExists(Guid id)

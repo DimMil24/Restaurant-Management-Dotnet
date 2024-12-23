@@ -57,21 +57,17 @@ public class CategoryService
         return newCategory;
     }
 
-    public async Task UpdateCategoryAsync(Category? category,string name)
+    public async Task UpdateCategoryAsync(Category category,string name)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
-        category!.Name = name;
+        category.Name = name;
         _context.Update(category);
         await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
     }
 
     public async Task DeleteCategoryAsync(Category category)
     {
-        await using var transaction = await _context.Database.BeginTransactionAsync();
         _context.Category.Remove(category);
         await _context.SaveChangesAsync();
-        await transaction.CommitAsync();
     }
     
     public bool CategoryExists(long id)
