@@ -16,10 +16,12 @@ namespace Restaurant_Manager.Controllers
 	public class RestaurantController : Controller
     {
         private readonly RestaurantService _restaurantService;
+        private readonly TagService _tagService;
 
-        public RestaurantController(RestaurantService restaurantService)
+        public RestaurantController(RestaurantService restaurantService, TagService tagService)
         {
             _restaurantService = restaurantService;
+            _tagService = tagService;
         }
 
         public async Task<IActionResult> Index()
@@ -56,12 +58,14 @@ namespace Restaurant_Manager.Controllers
             {
                 return NotFound();
             }
+            ViewData["Tags"] = await _tagService.GetAllTags();
             return View(restaurant);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,IsOpen,Description")] Restaurant restaurant)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,IsOpen,Description")] Restaurant restaurant,
+            long[] TagList)
         {
             if (id != restaurant.Id)
             {
@@ -72,7 +76,8 @@ namespace Restaurant_Manager.Controllers
             {
                 try
                 {
-					await _restaurantService.UpdateRestaurant(restaurant);
+                    restaurant.Tags = await _tagService.GetTagsByRestaurantId(restaurant.Id);
+					await _restaurantService.UpdateRestaurant(restaurant,TagList);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

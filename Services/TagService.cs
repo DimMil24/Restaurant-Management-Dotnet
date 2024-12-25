@@ -40,4 +40,9 @@ public class TagService
         await _dbContext.RestaurantTag.AddRangeAsync(tags);
         await _dbContext.SaveChangesAsync();
     }
+
+    public async Task<List<RestaurantTag>> GetTagsByRestaurantId(Guid restaurantId)
+    {
+        return await _dbContext.RestaurantTag.Where(r =>r.RestaurantId == restaurantId ).ToListAsync();
+    }
 }

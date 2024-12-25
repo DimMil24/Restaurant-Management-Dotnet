@@ -13,6 +13,6 @@ namespace Restaurant_Manager.Models
 		
 		public List<Category>? Categories { get; set; }
 		
-		public List<RestaurantTag> Tags { get; set; }
+		public List<RestaurantTag>? Tags { get; set; }
 	}
 }
