@@ -41,34 +41,7 @@ public class RestaurantService
 
     public async Task UpdateRestaurant(Restaurant restaurant,long[] tags)
     {
-        if (restaurant.Tags != null)
-        {
-            var currentTagIds = restaurant.Tags.Select(rt => rt.TagId).ToList();
-
-            // Determine the tags to be added and removed
-            var tagsToAdd = tags.Except(currentTagIds).ToList();
-            var tagsToRemove = currentTagIds.Except(tags).ToList();
-
-            // Add new tags
-            foreach (var tagId in tagsToAdd)
-            {
-                var rt = new RestaurantTag
-                {
-                    RestaurantId = restaurant.Id,
-                    TagId = tagId
-                };
-                _context.RestaurantTag.Add(rt);
-            }
-        
-            foreach (var tagId in tagsToRemove)
-            {
-                var tagToRemove = restaurant.Tags.FirstOrDefault(rt => rt.TagId == tagId);
-                if (tagToRemove != null)
-                {
-                    _context.RestaurantTag.Remove(tagToRemove);
-                }
-            }
-        }
+        _tagService.UpdateTagsToRestaurant(restaurant, tags);
         _context.Update(restaurant);
         await _context.SaveChangesAsync();
     }

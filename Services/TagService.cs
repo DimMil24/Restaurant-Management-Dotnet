@@ -41,6 +41,38 @@ public class TagService
         await _dbContext.SaveChangesAsync();
     }
 
+    public void UpdateTagsToRestaurant(Restaurant? restaurant,long[] tags)
+    {
+        if (restaurant != null)
+        {
+            var currentTagIds = restaurant.Tags.Select(rt => rt.TagId).ToList();
+
+            // Determine the tags to be added and removed
+            var tagsToAdd = tags.Except(currentTagIds).ToList();
+            var tagsToRemove = currentTagIds.Except(tags).ToList();
+
+            // Add new tags
+            foreach (var tagId in tagsToAdd)
+            {
+                var rt = new RestaurantTag
+                {
+                    RestaurantId = restaurant.Id,
+                    TagId = tagId
+                };
+                _dbContext.RestaurantTag.Add(rt);
+            }
+        
+            foreach (var tagId in tagsToRemove)
+            {
+                var tagToRemove = restaurant.Tags.FirstOrDefault(rt => rt.TagId == tagId);
+                if (tagToRemove != null)
+                {
+                    _dbContext.RestaurantTag.Remove(tagToRemove);
+                }
+            }
+        }
+    }
+
     public async Task<List<RestaurantTag>> GetTagsByRestaurantId(Guid restaurantId)
     {
         return await _dbContext.RestaurantTag.Where(r =>r.RestaurantId == restaurantId ).ToListAsync();

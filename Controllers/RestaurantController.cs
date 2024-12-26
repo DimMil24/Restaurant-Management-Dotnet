@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Models.Requests;
 using Restaurant_Manager.Services;
 
 namespace Restaurant_Manager.Controllers
@@ -64,10 +65,9 @@ namespace Restaurant_Manager.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,IsOpen,Description")] Restaurant restaurant,
-            long[] TagList)
+        public async Task<IActionResult> Edit(Guid id,EditRestaurantRequest editRestaurantRequest)
         {
-            if (id != restaurant.Id)
+            if (id != editRestaurantRequest.Id)
             {
                 return NotFound();
             }
@@ -76,12 +76,12 @@ namespace Restaurant_Manager.Controllers
             {
                 try
                 {
-                    restaurant.Tags = await _tagService.GetTagsByRestaurantId(restaurant.Id);
-					await _restaurantService.UpdateRestaurant(restaurant,TagList);
+                    var restaurant = await _restaurantService.FindRestaurantByIdWithTags(editRestaurantRequest.Id);
+					await _restaurantService.UpdateRestaurant(restaurant,editRestaurantRequest.TagList);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_restaurantService.RestaurantExists(restaurant.Id))
+                    if (!_restaurantService.RestaurantExists(editRestaurantRequest.Id))
                     {
                         return NotFound();
                     }
@@ -92,7 +92,7 @@ namespace Restaurant_Manager.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(restaurant);
+            return View();
         }
 
         public async Task<IActionResult> Delete(Guid? id)
