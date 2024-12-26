@@ -179,8 +179,6 @@ namespace Restaurant_Manager.Controllers
             {
                 return new ChallengeResult();
             }
-
-            return View(category);
         }
 
         // POST: Category/Delete/5

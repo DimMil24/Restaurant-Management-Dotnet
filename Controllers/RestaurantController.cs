@@ -54,7 +54,7 @@ namespace Restaurant_Manager.Controllers
                 return NotFound();
             }
 
-            var restaurant = await _restaurantService.FindRestaurantById(id);
+            var restaurant = await _restaurantService.FindRestaurantByIdWithTags(id);
             if (restaurant == null)
             {
                 return NotFound();
@@ -77,7 +77,7 @@ namespace Restaurant_Manager.Controllers
                 try
                 {
                     var restaurant = await _restaurantService.FindRestaurantByIdWithTags(editRestaurantRequest.Id);
-					await _restaurantService.UpdateRestaurant(restaurant,editRestaurantRequest.TagList);
+					await _restaurantService.UpdateRestaurant(restaurant,editRestaurantRequest);
                 }
                 catch (DbUpdateConcurrencyException)
                 {

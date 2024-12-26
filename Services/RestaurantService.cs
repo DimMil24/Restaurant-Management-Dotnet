@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Restaurant_Manager.Data;
 using Restaurant_Manager.Models;
+using Restaurant_Manager.Models.Requests;
 
 namespace Restaurant_Manager.Services;
 
@@ -39,10 +40,13 @@ public class RestaurantService
         await _context.SaveChangesAsync();
     }
 
-    public async Task UpdateRestaurant(Restaurant restaurant,long[] tags)
+    public async Task UpdateRestaurant(Restaurant restaurant,EditRestaurantRequest editRestaurantRequest)
     {
-        _tagService.UpdateTagsToRestaurant(restaurant, tags);
+        restaurant.Name = editRestaurantRequest.Name;
+        restaurant.Description = editRestaurantRequest.Description;
+        restaurant.IsOpen = editRestaurantRequest.IsOpen;
         _context.Update(restaurant);
+        _tagService.UpdateTagsToRestaurant(restaurant, editRestaurantRequest.TagList);
         await _context.SaveChangesAsync();
     }
 

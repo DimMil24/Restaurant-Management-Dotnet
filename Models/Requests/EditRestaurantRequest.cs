@@ -10,5 +10,5 @@ public class EditRestaurantRequest
     public bool IsOpen { get; set; }
     [MaxLength(500)]
     public string? Description { get; set; }
-    public long[] TagList { get; set; }
+    public List<long>? TagList { get; set; }
 }

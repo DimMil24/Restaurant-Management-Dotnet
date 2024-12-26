@@ -18,7 +18,7 @@ public class TagService
         return await _dbContext.Tag.FirstOrDefaultAsync(t => t.Id == id);
     }
 
-    public async Task<List<Tag>> GetAllTags()
+    public async Task<List<Tag>?> GetAllTags()
     {
         return await _dbContext.Tag.OrderBy(t => t.Name).AsNoTracking().ToListAsync();
     }
@@ -41,27 +41,30 @@ public class TagService
         await _dbContext.SaveChangesAsync();
     }
 
-    public void UpdateTagsToRestaurant(Restaurant? restaurant,long[] tags)
+    public void UpdateTagsToRestaurant(Restaurant? restaurant,List<long>? tags)
     {
         if (restaurant != null)
         {
             var currentTagIds = restaurant.Tags.Select(rt => rt.TagId).ToList();
 
-            // Determine the tags to be added and removed
-            var tagsToAdd = tags.Except(currentTagIds).ToList();
-            var tagsToRemove = currentTagIds.Except(tags).ToList();
-
-            // Add new tags
-            foreach (var tagId in tagsToAdd)
+            if (tags != null)
             {
-                var rt = new RestaurantTag
+                // Determine the tags to be added and removed
+                var tagsToAdd = tags.Except(currentTagIds).ToList();
+
+                // Add new tags
+                foreach (var tagId in tagsToAdd)
                 {
-                    RestaurantId = restaurant.Id,
-                    TagId = tagId
-                };
-                _dbContext.RestaurantTag.Add(rt);
+                    var rt = new RestaurantTag
+                    {
+                        RestaurantId = restaurant.Id,
+                        TagId = tagId
+                    };
+                    _dbContext.RestaurantTag.Add(rt);
+                }
             }
-        
+            List<long> tagsToRemove;
+            tagsToRemove = tags == null ? currentTagIds : currentTagIds.Except(tags).ToList();
             foreach (var tagId in tagsToRemove)
             {
                 var tagToRemove = restaurant.Tags.FirstOrDefault(rt => rt.TagId == tagId);
