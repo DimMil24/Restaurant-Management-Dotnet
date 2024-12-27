@@ -28,7 +28,7 @@ namespace Restaurant_Manager.Controllers
             return View(await _restaurantService.GetAllRestaurantsWithTags());
         }
 
-		public async Task<IActionResult> RestaurantPreview(Guid id)
+		public async Task<IActionResult> Shop(Guid id)
 		{
             ViewBag.Id = id;
             ViewBag.Categories = await _categoryService.GetCategoriesByRestaurant(id);
