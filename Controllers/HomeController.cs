@@ -11,20 +11,21 @@ namespace Restaurant_Manager.Controllers
     {
         private readonly ILogger<HomeController> _logger;
 		private readonly RestaurantService _restaurantService;
-		private readonly ProductService _productService;
 		private readonly CategoryService _categoryService;
+		private readonly TagService _tagService;
 
-		public HomeController(ILogger<HomeController> logger, RestaurantService restaurantService, ProductService productService, CategoryService categoryService)
+		public HomeController(ILogger<HomeController> logger, RestaurantService restaurantService, CategoryService categoryService, TagService tagService)
 		{
 			_logger = logger;
 			_restaurantService = restaurantService;
-			_productService = productService;
 			_categoryService = categoryService;
+			_tagService = tagService;
 		}
 
 		public async Task<IActionResult> Index()
         {
-            return View(await _restaurantService.GetAllRestaurants());
+	        ViewBag.Tags = await _tagService.GetAllTags();
+            return View(await _restaurantService.GetAllRestaurantsWithTags());
         }
 
 		public async Task<IActionResult> RestaurantPreview(Guid id)

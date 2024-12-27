@@ -37,7 +37,9 @@
                     var tags = ViewData["Tags"] as List<Tag>;
                     for (int i = 0; i < tags.Count; i++)
                     {
-                        <input name="TagList" type="checkbox" @(Model.Tags.Where(r=> r.RestaurantId==Model.Id).Select(u=> u.Tag.Id).Contains(tags[i].Id)? "checked" : "") class="form-check-input" value="@tags[i].Id"/> @tags[i].Name<br/>
+                        <input name="TagList" type="checkbox" 
+                               @(Model.Tags.Select(u=> u.Tag.Id).Contains(tags[i].Id)? "checked" : "") 
+                               class="form-check-input" value="@tags[i].Id"/> @tags[i].Name<br/>
                     }
                 }
             </div>

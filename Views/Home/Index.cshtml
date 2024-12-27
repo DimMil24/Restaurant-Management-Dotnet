@@ -6,22 +6,51 @@
 
 <div class="container">
     <div class="row">
-        @foreach (var item in Model) {
+        <div class="col-md-3 justify-content-center align-content-center">
+            <h2>Cuisines</h2>
+            <hr/>
+            <div class="form-check overflow-y-auto" style="max-height: calc(-139px + 100vh)">
+                @foreach (var tag in ViewBag.Tags)
+                {
+                    <input class="form-check-input" type="checkbox" value="" id="@tag.Id">
+                    <label class="form-check-label" for="@tag.Id">
+                        @tag.Name
+                    </label>
+                    <br/>
+                }
+            </div>
 
-        <div class="col-md-3 mb-4">
-                <div class="card" style="width: 12rem;">
-                    <img src="~/images/restaurant_sample.jpg" class="card-img-top" alt="damn">
-                    <div class="card-body">
-                        <h5 class="card-title">
-                            @Html.DisplayFor(modelItem => item.Name)
-                        </h5>
-                        <p class="card-text">
-                            @Html.DisplayFor(modelItem => item.Description)
-                        </p>
-                        <a asp-controller="Home" asp-action="RestaurantPreview" asp-route-id="@item.Id" class="btn btn-primary"></a>
+        </div>
+        <div class="col-md-9">
+            <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-4 mb-4">
+                    <div class="card" style="width: 12rem;">
+                        <a class="link-dark text-decoration-none" asp-controller="Home" asp-action="RestaurantPreview" asp-route-id="@item.Id">
+                        <img src="~/images/restaurant_sample.jpg" class="card-img-top" alt="damn">
+                            <div class="card-body">
+                                <h5 class="card-title">
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                    <br/>
+                                </h5>
+                                <div class="d-flex flex-row align-items-center gap-1">
+                                @foreach (var tag in item.Tags.Take(2).ToList())
+                                {
+                                    <span class="fst-italic" style="font-size: 13px">
+                                        @tag.Tag.Name
+                                    </span>
+                                }
+                                </div>
+                                <p class="card-text">
+                                    @Html.DisplayFor(modelItem => item.Description)
+                                </p>
+                            </div>
+                        </a>
                     </div>
                 </div>
+            }
             </div>
-        }
+        </div>
     </div>
 </div>

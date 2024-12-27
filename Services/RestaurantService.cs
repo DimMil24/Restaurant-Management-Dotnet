@@ -20,6 +20,13 @@ public class RestaurantService
     {
         return await _context.Restaurant.ToListAsync();
     }
+    
+    public async Task<List<Restaurant>> GetAllRestaurantsWithTags()
+    {
+        return await _context.Restaurant.Include(r => r.Tags)
+            .ThenInclude(t => t.Tag)
+            .ToListAsync();
+    }
 
     public async Task<Restaurant?> FindRestaurantById(Guid? id)
     {

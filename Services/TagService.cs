@@ -63,8 +63,8 @@ public class TagService
                     _dbContext.RestaurantTag.Add(rt);
                 }
             }
-            List<long> tagsToRemove;
-            tagsToRemove = tags == null ? currentTagIds : currentTagIds.Except(tags).ToList();
+
+            var tagsToRemove = tags == null ? currentTagIds : currentTagIds.Except(tags).ToList();
             foreach (var tagId in tagsToRemove)
             {
                 var tagToRemove = restaurant.Tags.FirstOrDefault(rt => rt.TagId == tagId);
