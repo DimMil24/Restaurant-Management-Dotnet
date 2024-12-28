@@ -22,10 +22,11 @@ namespace Restaurant_Manager.Controllers
 			_tagService = tagService;
 		}
 
-		public async Task<IActionResult> Index()
+		public async Task<IActionResult> Index(string[] filter)
         {
 	        ViewBag.Tags = await _tagService.GetAllTags();
-            return View(await _restaurantService.GetAllRestaurantsWithTags());
+	        ViewBag.Filters = filter;
+            return View(await _restaurantService.GetAllRestaurantsWithTags(filter));
         }
 
 		public async Task<IActionResult> Shop(Guid id)

@@ -21,11 +21,15 @@ public class RestaurantService
         return await _context.Restaurant.ToListAsync();
     }
     
-    public async Task<List<Restaurant>> GetAllRestaurantsWithTags()
+    public async Task<List<Restaurant>> GetAllRestaurantsWithTags(string[] filter)
     {
-        return await _context.Restaurant.Include(r => r.Tags)
-            .ThenInclude(t => t.Tag)
-            .ToListAsync();
+        var restaurants = _context.Restaurant.Include(r => r.Tags)
+                                                        .ThenInclude(t => t.Tag);
+        if (filter.Length > 0)
+        {
+            return await restaurants.Where(r => r.Tags.Any(t => filter.Contains(t.Tag.Name))).ToListAsync();
+        }
+        return await restaurants.ToListAsync();
     }
 
     public async Task<Restaurant?> FindRestaurantById(Guid? id)
